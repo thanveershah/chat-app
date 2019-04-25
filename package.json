@@ -7,17 +7,19 @@
     "test": "test"
   },
   "scripts": {
-    "start": "node chat",
-    "dev": "nodemon chat"
+    "start": "node bleh",
+    "dev": "nodemon bleh"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.4",
     "express": "^4.16.4",
-    "express-handlebars": "^3.0.2",
     "express-session": "^1.15.6",
+    "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
+    "mongodb": "^3.2.3",
     "mysql": "^2.16.0",
     "socket.io": "^2.2.0",
     "uuid": "^3.3.2"
