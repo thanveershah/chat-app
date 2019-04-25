@@ -14,6 +14,13 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <style>
+      @media (max-width: 676px) {
+        #test {
+          flex-direction: column;
+        }
+      }
+    </style>
   </head>
   <body class="bg-dark">
     <!-- <form id="form" autocomplete="off" id="chat_form">
@@ -31,7 +38,7 @@
           <h3 class="mb-5" style="color:white">
             Create A Name To Enter The Chat Room!
           </h3>
-          <div class="d-flex justify-content-center">
+          <div class="d-flex justify-content-center" id="test">
             <div class="form-group">
               <input
                 id="name"
@@ -106,22 +113,23 @@
 
       function setUsername() {
         socket.emit("setUsername", document.getElementById("name").value);
-        // window.location.href = "chatlog.html";
       }
       var user;
 
       socket.on("userExists", data => {
         document.getElementById("error-container").innerHTML = data;
       });
-      // socket.on("redirect", destination => {
-      //   window.location.href = destination;
-      // });
 
       socket.on("userSet", function(data) {
         user = data.username;
-        document.body.innerHTML =
-          '<div class="container-fluid"> <div class="row"> <div class="col-12"> <h3 style="color:white;" class="mb-3 pt-4">Let The Chat Being!</h3><div class="d-flex"> <div class="form-group"> <input type="text" id="message" class="form-control" /> </div> <div class="form-group"> <button type="button" name="button" onclick="sendMessage()" class="btn btn-primary ml-2" > Send </button> </div> </div> <div id="message-container" style="color:white"></div> </div> </div></div>';
+        $("body").empty();
+        $("body").append(
+          '<div class="container-fluid"> <div class="row"> <div class="col-12"> <h3 style="color:white;" class="mb-3 pt-4">Let The Chat Being!</h3><div class="d-flex"> <div class="form-group"> <input type="text" id="message" class="form-control inputText" /> </div> <div class="form-group"> <button type="button" name="button" onclick="sendMessage()" class="btn btn-primary ml-2" > Send </button> </div> </div> <p id="typer" style="color:white">sss</p> <div id="message-container" style="color:white"></div> </div> </div></div>'
+        );
       });
+
+      var messageInput = document.getElementById("message");
+
       function sendMessage() {
         var msg = document.getElementById("message").value;
         if (msg) {

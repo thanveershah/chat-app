@@ -36,7 +36,6 @@ app.get("/", (req, res) => {
 
 users = [];
 io.on("connection", function(socket) {
-  // var destination = "chatlog.html";
   console.log("A user connected");
   socket.on("setUsername", function(data) {
     console.log(data);
@@ -46,19 +45,17 @@ io.on("connection", function(socket) {
     } else {
       users.push(data);
       socket.emit("userSet", { username: data });
-      // socket.emit("redirect", destination);
     }
   });
 
-  socket.on("msg", function(data) {
+  socket.on("msg", data => {
     io.sockets.emit("newmsg", data);
-  });
-
-  socket.on("isTyping", () => {
-    client.broadcast.emit("typing", "Typing");
-  });
-  socket.on("notTyping", () => {
-    client.broadcast.emit("nottyping", "Stopped");
+    socket.on("isTyping", () => {
+      socket.broadcast.emit("typing", "Typing");
+    });
+    socket.on("notTyping", () => {
+      socket.broadcast.emit("nottyping", "Stopped");
+    });
   });
 });
 
