@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
-  res.sendFile(pathname.join(__dirname, "public", "chat.html"));
+  res.sendFile(pathname.join(__dirname, "chat.html"));
 });
 
 io.on("connection", client => {
@@ -24,7 +24,7 @@ io.on("connection", client => {
     client.emit("broad", data);
     client.broadcast.emit("broad", data);
   });
-  
+
   client.on("isTyping", () => {
     client.broadcast.emit("typing", "Typing");
   });
