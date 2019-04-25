@@ -33,4 +33,35 @@ io.on("connection", client => {
   });
 });
 
+
+
+
+
+users = [];
+io.on('connection', function(socket) {
+   console.log('A user connected');
+   socket.on('setUsername', function(data) {
+      console.log(data);
+      
+      if(users.indexOf(data) > -1) {
+         socket.emit('userExists', data + ' username is taken! Try some other username.');
+      } else {
+         users.push(data);
+         socket.emit('userSet', {username: data});
+      }
+   });
+   
+   socket.on('msg', function(data) {
+      io.sockets.emit('newmsg', data);
+   })
+
+   socket.on("isTyping", () => {
+    client.broadcast.emit("typing", "Typing");
+  });
+  socket.on("notTyping", () => {
+    client.broadcast.emit("nottyping", "Stopped");
+  });
+});
+
+
 http.listen(PORT, () => console.log(PORT));
