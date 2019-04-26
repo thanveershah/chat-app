@@ -1,14 +1,11 @@
 const express = require("express");
 const app = express();
-const cookieParser = require("cookie-parser");
 const pathname = require("path");
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const fs = require("fs");
 const PORT = process.env.PORT || 5000;
-
-app.use(cookieParser());
-// app.use(express.static(pathname.join(__dirname, "chatlog.html")));
+const cookieParser = require("cookie-parser");
 
 app.get("/", (req, res) => {
   res.sendFile(pathname.join(__dirname, "chat.html"));
@@ -34,7 +31,7 @@ app.get("/", (req, res) => {
 //   });
 // });
 
-users = [];
+var users = [];
 io.on("connection", function(socket) {
   console.log("A user connected");
   socket.on("setUsername", function(data) {
@@ -45,6 +42,7 @@ io.on("connection", function(socket) {
     } else {
       users.push(data);
       socket.emit("userSet", { username: data });
+      socket.emit("joined", data + " has joined");
     }
   });
 
