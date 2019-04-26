@@ -14,13 +14,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
     <script src="/socket.io/socket.io.js"></script>
-    <style>
-      @media (max-width: 676px) {
-        #test {
-          flex-direction: column;
-        }
-      }
-    </style>
+    <style></style>
   </head>
   <body class="bg-dark">
     <!-- <form id="form" autocomplete="off" id="chat_form">
@@ -57,7 +51,7 @@
                 name="button"
                 onclick="setUsername()"
               >
-                Create Name
+                Create
               </button>
             </div>
           </div>
@@ -117,14 +111,15 @@
       //   });
       // });
 
-      function sendMessage() {
+      const sendMessage = () => {
         var msg = document.getElementById("message").value;
         if (msg) {
           socket.emit("msg", { message: msg, user: user });
         }
-      }
+        document.getElementById("message").value = "";
+      };
 
-      socket.on("newmsg", function(data) {
+      socket.on("newmsg", data => {
         if (user) {
           document.getElementById("message-container").innerHTML +=
             "<div><b>" + data.user + "</b>: " + data.message + "</div>";
@@ -135,15 +130,19 @@
         document.getElementById("namePerson").innerHTML += data + "<br />";
       });
 
-      socket.on("userSet", function(data) {
-        user = data.username;
-        document.body.innerHTML =
-          ' <div class="container-fluid"> <div class="row"> <div class="col-12"> <h3 style="color:white;" class="mb-3 pt-4">Let The Chat Being!</h3> <div class="d-flex"> <div class="form-group"> <input type="text" id="message" class="form-control inputText" /> </div> <div class="form-group"> <button type="button" name="button" onclick="sendMessage()" class="btn btn-primary ml-2" > Send </button> </div> </div> <p id="namePerson"></p> <br> <div id="message-container" style="color:white"></div> </div> </div> </div>';
+      socket.on("left", data => {
+        document.getElementById("namePerson").innerHTML += data + "<br />";
       });
 
-      function setUsername() {
+      socket.on("userSet", data => {
+        user = data.username;
+        document.body.innerHTML =
+          ' <div class="container-fluid"> <div class="row test-row"> <div class="col-12"> <h3 style="color:white;" class="mb-3 pt-4">Let The Chat Begin!</h3> <div class="d-flex ground"> <div class="form-group"> <input type="text" id="message" class="form-control inputText" /> </div> <div class="form-group"> <button type="button" name="button" onclick="sendMessage()" class="btn btn-primary ml-2" > Send </button> </div> </div> <p id="namePerson" style="color:silver"></p> <div id="message-container" style="color:white"></div> </div> </div> </div>';
+      });
+
+      const setUsername = () => {
         socket.emit("setUsername", document.getElementById("name").value);
-      }
+      };
       var user;
 
       socket.on("userExists", data => {
