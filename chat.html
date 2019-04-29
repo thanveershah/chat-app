@@ -67,12 +67,146 @@
     </footer>
 
     <script>
-      if ("serviceWorker" in navigator) {
-        alert("Serc");
+      var socket = io.connect();
+      // var timeout;
+      // socket.on("connect", data => {
+      //   socket.emit("join", "Hello World from client");
+
+      //   socket.on("broad", data => {
+      //     $("#future").append(data + "<br/>");
+      //   });
+
+      // function timeoutFunction() {
+      //   socket.emit("typing", false);
+      // }
+      // var message = document.getElementById("message");
+
+      // $('#message').addEventListener("input", function() {
+      //   if ($("#chat_input").val().length > 0) {
+      //     socket.emit("isTyping", () => {
+      //       socket.emit("typing", data);
+      //     });
+      //   } else {
+      //     socket.emit("notTyping", () => {
+      //       socket.emit("nottyping", data);
+      //     });
+      //   }
+      // });
+
+      // socket.on("typing", data => {
+      //   $("p").empty();
+      //   $("p").append(data);
+      // });
+
+      // socket.on("nottyping", data => {
+      //   $("p").empty();
+      //   $("p").append(data);
+      // });
+
+      //   $("form").submit(function(e) {
+      //     e.preventDefault();
+      //     var message = $("#chat_input").val();
+      //     socket.emit("messages", message);
+      //     $("#chat_input").val("");
+      //   });
+      // });
+
+      const sendMessage = () => {
+        var msg = document.getElementById("message").value;
+        if (msg) {
+          socket.emit("msg", { message: msg, user: user });
+        }
+        document.getElementById("message").value = "";
+      };
+
+      socket.on("newmsg", data => {
+        if (user) {
+          document.getElementById("message-container").innerHTML +=
+            "<div><b>" + data.user + "</b>: " + data.message + "</div>";
+        }
+        socket.once("notify everyone", data => {
+          notifyMe(data.user, data.comment);
+        });
+      });
+
+      socket.on("joined", data => {
+        document.getElementById("namePerson").innerHTML += data + "<br />";
+        notifyUser(data);
+      });
+
+      socket.on("left", data => {
+        document.getElementById("namePerson").innerHTML += data + "<br />";
+      });
+
+      socket.on("userSet", data => {
+        user = data.username;
+        document.body.innerHTML =
+          ' <div class="container-fluid"> <div class="row test-row"> <div class="col-12"> <h3 style="color:white;" class="mb-3 pt-4">Let The Chat Begin!</h3> <div class="d-flex ground"> <div class="form-group"> <input type="text" id="message" class="form-control inputText" /> </div> <div class="form-group"> <button type="button" name="button" onclick="sendMessage()" class="btn btn-primary ml-2" > Send </button> </div> </div> <p id="namePerson" style="color:silver"></p> <div id="message-container" style="color:white"></div> </div> </div> </div>';
+      });
+
+      const setUsername = () => {
+        socket.emit("setUsername", document.getElementById("name").value);
+      };
+      var user;
+
+      socket.on("userExists", data => {
+        document.getElementById("error-container").innerHTML = data;
+      });
+
+      function notifyUser(user) {
+        if (!("Notification" in window)) {
+          alert("This browser does not support desktop notification");
+        } else if (Notification.permission === "granted") {
+          // If it's okay let's create a notification
+          var options = {
+            body: user,
+            dir: "ltr"
+          };
+          var notification = new Notification(user, options);
+          notification.close();
+        }
       }
 
-      if ("PushManager" in window) {
-        alert("Push");
+      function notifyMe(user, message) {
+        // Let's check if the browser supports notifications
+        if (!("Notification" in window)) {
+          alert("This browser does not support desktop notification");
+        }
+
+        // Let's check if the user is okay to get some notification
+        else if (Notification.permission === "granted") {
+          // If it's okay let's create a notification
+          var options = {
+            body: message,
+            dir: "ltr"
+          };
+          var notification = new Notification(user, options);
+          notification.close();
+        }
+        // Otherwise, we need to ask the user for permission
+        // Note, Chrome does not implement the permission static property
+        // So we have to check for NOT 'denied' instead of 'default'
+        else if (Notification.permission !== "denied") {
+          Notification.requestPermission(function(permission) {
+            // Whatever the user answers, we make sure we store the information
+            if (!("permission" in Notification)) {
+              Notification.permission = permission;
+            }
+            // If the user is okay, let's create a notification
+            if (permission === "granted") {
+              var options = {
+                body: message,
+                dir: "ltr"
+              };
+              // var notification = new Notification(
+              //   user + " Posted a comment",
+              //   options
+              // );
+            }
+          });
+        }
+        // At last, if the user already denied any notification, and you
+        // want to be respectful there is no need to bother them any more.
       }
     </script>
   </body>
