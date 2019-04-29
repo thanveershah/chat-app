@@ -158,16 +158,18 @@
         Push.create("Welcome " + user, {
           body: user + " Has joined",
           timeout: 6000,
+          vibrate: [200, 100],
           onClick: function() {
             console.log(this);
           }
         });
       }
-      
+
       function notifyMe(user, message) {
         Push.create(user, {
           body: message,
           timeout: 6000,
+          vibrate: [200, 100],
           onClick: function() {
             console.log(this);
           }
