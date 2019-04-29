@@ -159,7 +159,6 @@
           body: user + " Has joined",
           timeout: 6000,
           vibrate: [200, 100],
-          link: "/#",
           onClick: function() {
             console.log(this);
           },
@@ -171,7 +170,6 @@
         Push.create(user, {
           body: message,
           timeout: 6000,
-          link: "/#",
           onClick: function() {
             window.focus();
             this.close();
@@ -180,8 +178,8 @@
         });
       }
 
-      alert(Push.Permission.has());
-      alert(Push.Permission.get());
+      // alert(Push.Permission.has());
+      // alert(Push.Permission.get());
 
       // function notifyUser(user) {
       //   if (!("Notification" in window)) {
