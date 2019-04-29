@@ -1,8 +1,14 @@
 const express = require("express");
 const app = express();
-const pathname = require("path");
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
+const pathname = require("path");
+
+//Express Way
+// const server = app.listen(5000)
+// const io = require("socket.io")(server);
+//
+
 const PORT = process.env.PORT || 5000;
 
 app.get("/", (req, res) => {
@@ -30,8 +36,8 @@ app.get("/", (req, res) => {
 // });
 
 var users = [];
-io.on("connection", function(socket) {
-  socket.on("setUsername", function(data) {
+io.on("connection", socket => {
+  socket.on("setUsername", data => {
     if (users.indexOf(data) > -1) {
       socket.emit("userExists", data + " username is taken!");
     } else {
@@ -41,12 +47,18 @@ io.on("connection", function(socket) {
     }
     socket.on("disconnect", () => {
       socket.broadcast.emit("left", data + " has left");
+      console.log(data);
     });
   });
 
   socket.on("msg", data => {
-    io.sockets.emit("newmsg", data);
+    io.emit("newmsg", data);
+    socket.broadcast.emit("notify everyone", {
+      user: data.user,
+      comment: data.message
+    });
+    console.log(data);
   });
 });
 
-http.listen(PORT, () => console.log("Serever Started in " + PORT));
+http.listen(PORT, () => console.log("Server Started in " + PORT));
