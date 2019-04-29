@@ -65,7 +65,7 @@
         Thanveer Shah - Developed using Node , Express , Socket.io
       </p>
     </footer>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.5/push.js"></script>
     <script>
       var socket = io.connect();
       // var timeout;
@@ -130,7 +130,8 @@
       });
 
       socket.on("joined", data => {
-        document.getElementById("namePerson").innerHTML += data + "<br />";
+        document.getElementById("namePerson").innerHTML +=
+          data + " has joined" + "<br />";
         notifyUser(data);
       });
 
@@ -154,60 +155,80 @@
       });
 
       function notifyUser(user) {
-        if (!("Notification" in window)) {
-          alert("This browser does not support desktop notification");
-        } else if (Notification.permission === "granted") {
-          // If it's okay let's create a notification
-          var options = {
-            body: user,
-            dir: "ltr"
-          };
-          var notification = new Notification(user, options);
-          notification.close();
-        }
+        Push.create("Welcome " + user, {
+          body: user + " Has joined",
+          timeout: 6000,
+          onClick: function() {
+            console.log(this);
+          }
+        });
       }
-
+      
       function notifyMe(user, message) {
-        // Let's check if the browser supports notifications
-        if (!("Notification" in window)) {
-          alert("This browser does not support desktop notification");
-        }
-
-        // Let's check if the user is okay to get some notification
-        else if (Notification.permission === "granted") {
-          // If it's okay let's create a notification
-          var options = {
-            body: message,
-            dir: "ltr"
-          };
-          var notification = new Notification(user, options);
-          notification.close();
-        }
-        // Otherwise, we need to ask the user for permission
-        // Note, Chrome does not implement the permission static property
-        // So we have to check for NOT 'denied' instead of 'default'
-        else if (Notification.permission !== "denied") {
-          Notification.requestPermission(function(permission) {
-            // Whatever the user answers, we make sure we store the information
-            if (!("permission" in Notification)) {
-              Notification.permission = permission;
-            }
-            // If the user is okay, let's create a notification
-            if (permission === "granted") {
-              var options = {
-                body: message,
-                dir: "ltr"
-              };
-              // var notification = new Notification(
-              //   user + " Posted a comment",
-              //   options
-              // );
-            }
-          });
-        }
-        // At last, if the user already denied any notification, and you
-        // want to be respectful there is no need to bother them any more.
+        Push.create(user, {
+          body: message,
+          timeout: 6000,
+          onClick: function() {
+            console.log(this);
+          }
+        });
       }
+
+      // function notifyUser(user) {
+      //   if (!("Notification" in window)) {
+      //     alert("This browser does not support desktop notification");
+      //   } else if (Notification.permission === "granted") {
+      //     // If it's okay let's create a notification
+      //     var options = {
+      //       body: user,
+      //       dir: "ltr"
+      //     };
+      //     var notification = new Notification(user, options);
+      //     notification.close();
+      //   }
+      // }
+
+      // function notifyMe(user, message) {
+      //   // Let's check if the browser supports notifications
+      //   if (!("Notification" in window)) {
+      //     alert("This browser does not support desktop notification");
+      //   }
+
+      //   // Let's check if the user is okay to get some notification
+      //   else if (Notification.permission === "granted") {
+      //     // If it's okay let's create a notification
+      //     var options = {
+      //       body: message,
+      //       dir: "ltr"
+      //     };
+      //     var notification = new Notification(user, options);
+      //     notification.close();
+      //   }
+      //   // Otherwise, we need to ask the user for permission
+      //   // Note, Chrome does not implement the permission static property
+      //   // So we have to check for NOT 'denied' instead of 'default'
+      //   else if (Notification.permission !== "denied") {
+      //     Notification.requestPermission(function(permission) {
+      //       // Whatever the user answers, we make sure we store the information
+      //       if (!("permission" in Notification)) {
+      //         Notification.permission = permission;
+      //       }
+      //       // If the user is okay, let's create a notification
+      //       if (permission === "granted") {
+      //         var options = {
+      //           body: message,
+      //           dir: "ltr"
+      //         };
+      //         // var notification = new Notification(
+      //         //   user + " Posted a comment",
+      //         //   options
+      //         // );
+      //       }
+      //     });
+      //   }
+      //   // At last, if the user already denied any notification, and you
+      //   // want to be respectful there is no need to bother them any more.
+      // }
     </script>
   </body>
 </html>
