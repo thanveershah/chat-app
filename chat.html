@@ -126,12 +126,14 @@
         }
         socket.once("notify everyone", data => {
           notifyMe(data.user, data.comment);
+          showNotification();
         });
       });
 
       socket.on("joined", data => {
         document.getElementById("namePerson").innerHTML += data + "<br />";
         notifyUser(data);
+        showNotification();
       });
 
       socket.on("left", data => {
@@ -207,6 +209,23 @@
         }
         // At last, if the user already denied any notification, and you
         // want to be respectful there is no need to bother them any more.
+      }
+
+      navigator.serviceWorker.register("sw.js");
+
+      function showNotification() {
+        Notification.requestPermission(function(result) {
+          if (result === "granted") {
+            navigator.serviceWorker.ready.then(function(registration) {
+              registration.showNotification("Vibration Sample", {
+                body: "Buzz! Buzz!",
+                icon: "../images/touch/chrome-touch-icon-192x192.png",
+                vibrate: [200, 100, 200, 100, 200, 100, 200],
+                tag: "vibration-sample"
+              });
+            });
+          }
+        });
       }
     </script>
   </body>
