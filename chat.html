@@ -127,9 +127,6 @@
         socket.once("notify everyone", data => {
           notifyMe(data.user, data.comment);
         });
-        socket.off("notify everyone", data => {
-          notifyMe(data.user, data.comment);
-        });
       });
 
       socket.on("joined", data => {
@@ -166,6 +163,7 @@
             dir: "ltr"
           };
           var notification = new Notification(user, options);
+          notification.close();
         }
       }
 
@@ -183,6 +181,7 @@
             dir: "ltr"
           };
           var notification = new Notification(user, options);
+          notification.close();
         }
         // Otherwise, we need to ask the user for permission
         // Note, Chrome does not implement the permission static property
