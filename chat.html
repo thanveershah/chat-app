@@ -30,7 +30,7 @@
       >
         <div class="col-12 text-center ">
           <h3 class="mb-5" style="color:white">
-            Create A Name To Enter The Chat Room!
+            Createee A Name To Enter The Chat Room!
           </h3>
           <div class="d-flex justify-content-center" id="test">
             <div class="form-group">
@@ -124,13 +124,17 @@
           document.getElementById("message-container").innerHTML +=
             "<div><b>" + data.user + "</b>: " + data.message + "</div>";
         }
-        socket.on("notify everyone", data => {
+        socket.once("notify everyone", data => {
+          notifyMe(data.user, data.comment);
+        });
+        socket.off("notify everyone", data => {
           notifyMe(data.user, data.comment);
         });
       });
 
       socket.on("joined", data => {
         document.getElementById("namePerson").innerHTML += data + "<br />";
+        notifyUser(data);
       });
 
       socket.on("left", data => {
@@ -152,11 +156,26 @@
         document.getElementById("error-container").innerHTML = data;
       });
 
+      function notifyUser(user) {
+        if (!("Notification" in window)) {
+          alert("This browser does not support desktop notification");
+        } else if (Notification.permission === "granted") {
+          // If it's okay let's create a notification
+          var options = {
+            title: "New User",
+            body: user,
+            dir: "ltr"
+          };
+          var notification = new Notification(user, options);
+        }
+      }
+
       function notifyMe(user, message) {
         // Let's check if the browser supports notifications
         if (!("Notification" in window)) {
           alert("This browser does not support desktop notification");
         }
+
         // Let's check if the user is okay to get some notification
         else if (Notification.permission === "granted") {
           // If it's okay let's create a notification
@@ -181,10 +200,10 @@
                 body: message,
                 dir: "ltr"
               };
-              var notification = new Notification(
-                user + " Posted a comment",
-                options
-              );
+              // var notification = new Notification(
+              //   user + " Posted a comment",
+              //   options
+              // );
             }
           });
         }

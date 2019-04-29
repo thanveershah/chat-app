@@ -44,10 +44,14 @@ io.on("connection", socket => {
       users.push(data);
       socket.emit("userSet", { username: data });
       socket.broadcast.emit("joined", data + " has joined");
+      //    socket.broadcast.emit("notify everyone", {
+      //   user: data.user,
+      //   comment: data.message
+      // });
     }
     socket.on("disconnect", () => {
       socket.broadcast.emit("left", data + " has left");
-      console.log(data);
+      // console.log(data);
     });
   });
 
@@ -57,7 +61,7 @@ io.on("connection", socket => {
       user: data.user,
       comment: data.message
     });
-    console.log(data);
+    // console.log(data);
   });
 });
 
