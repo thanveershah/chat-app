@@ -161,7 +161,8 @@
           vibrate: [200, 100],
           onClick: function() {
             console.log(this);
-          }
+          },
+          vibrate: [200, 100, 200, 100, 200, 100, 200]
         });
       }
 
@@ -169,10 +170,11 @@
         Push.create(user, {
           body: message,
           timeout: 6000,
-          vibrate: [200, 100],
           onClick: function() {
-            console.log(this);
-          }
+            window.focus();
+            this.close();
+          },
+          vibrate: [200, 100, 200, 100, 200, 100, 200]
         });
       }
 
