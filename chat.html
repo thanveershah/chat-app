@@ -155,53 +155,88 @@
       });
 
       function notifyUser(user) {
-        document.addEventListener(
-          "visibilitychange",
-          function() {
-            if (document.hidden) {
-              Push.create("Welcome " + user, {
-                body: user + " Has joined",
-                timeout: 6000,
-                vibrate: [200, 100],
-                onClick: function() {
-                  window.focus();
-                  this.close;
-                  console.log(this);
-                },
-                vibrate: [200, 100, 200, 100, 200, 100, 200]
-              });
-              Push.clear();
-              Push.close();
-            }
+        Push.create("Welcome " + user, {
+          body: user + " Has joined",
+          timeout: 6000,
+          vibrate: [200, 100],
+          onClick: function() {
+            window.focus();
+            this.close();
           },
-          false
-        );
+          vibrate: [200, 100, 200, 100, 200, 100, 200]
+        });
       }
 
       function notifyMe(user, message) {
-        document.addEventListener(
-          "visibilitychange",
-          function() {
-            if (document.hidden) {
-              Push.create(user, {
-                body: message,
-                timeout: 6000,
-                onClick: function() {
-                  window.focus();
-                  this.close();
-                },
-                vibrate: [200, 100, 200, 100, 200, 100, 200]
-              });
-              Push.clear();
-              Push.close();
-            }
+        Push.create(user, {
+          body: message,
+          timeout: 6000,
+          onClick: function() {
+            window.focus();
+            this.close();
           },
-          false
-        );
+          vibrate: [200, 100, 200, 100, 200, 100, 200]
+        });
       }
 
       // alert(Push.Permission.has());
       // alert(Push.Permission.get());
+
+      // function notifyUser(user) {
+      //   if (!("Notification" in window)) {
+      //     alert("This browser does not support desktop notification");
+      //   } else if (Notification.permission === "granted") {
+      //     // If it's okay let's create a notification
+      //     var options = {
+      //       body: user,
+      //       dir: "ltr"
+      //     };
+      //     var notification = new Notification(user, options);
+      //     notification.close();
+      //   }
+      // }
+
+      // function notifyMe(user, message) {
+      //   // Let's check if the browser supports notifications
+      //   if (!("Notification" in window)) {
+      //     alert("This browser does not support desktop notification");
+      //   }
+
+      //   // Let's check if the user is okay to get some notification
+      //   else if (Notification.permission === "granted") {
+      //     // If it's okay let's create a notification
+      //     var options = {
+      //       body: message,
+      //       dir: "ltr"
+      //     };
+      //     var notification = new Notification(user, options);
+      //     notification.close();
+      //   }
+      //   // Otherwise, we need to ask the user for permission
+      //   // Note, Chrome does not implement the permission static property
+      //   // So we have to check for NOT 'denied' instead of 'default'
+      //   else if (Notification.permission !== "denied") {
+      //     Notification.requestPermission(function(permission) {
+      //       // Whatever the user answers, we make sure we store the information
+      //       if (!("permission" in Notification)) {
+      //         Notification.permission = permission;
+      //       }
+      //       // If the user is okay, let's create a notification
+      //       if (permission === "granted") {
+      //         var options = {
+      //           body: message,
+      //           dir: "ltr"
+      //         };
+      //         // var notification = new Notification(
+      //         //   user + " Posted a comment",
+      //         //   options
+      //         // );
+      //       }
+      //     });
+      //   }
+      //   // At last, if the user already denied any notification, and you
+      //   // want to be respectful there is no need to bother them any more.
+      // }
     </script>
   </body>
 </html>
