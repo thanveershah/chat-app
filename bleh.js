@@ -3,7 +3,7 @@ const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const pathname = require("path");
-
+const mysql = require;
 //Express Way
 // const server = app.listen(5000)
 // const io = require("socket.io")(server);
@@ -44,14 +44,9 @@ io.on("connection", socket => {
       users.push(data);
       socket.emit("userSet", { username: data });
       socket.broadcast.emit("joined", data);
-      //    socket.broadcast.emit("notify everyone", {
-      //   user: data.user,
-      //   comment: data.message
-      // });
     }
     socket.on("disconnect", () => {
       socket.broadcast.emit("left", data + " has left");
-      // console.log(data);
     });
   });
 
@@ -61,8 +56,11 @@ io.on("connection", socket => {
       user: data.user,
       comment: data.message
     });
-    // console.log(data);
   });
+
+  //Send Message
+
+  //Recieve Message
 });
 
 http.listen(PORT, () => console.log("Server Started in " + PORT));
