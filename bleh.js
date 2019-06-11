@@ -3,7 +3,10 @@ const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const pathname = require("path");
-const mysql = require;
+const MongoClient = require("mongodb").MongoClient;
+
+const url = "mongodb://localhost:27017/mychatdb";
+
 //Express Way
 // const server = app.listen(5000)
 // const io = require("socket.io")(server);
@@ -35,7 +38,7 @@ app.get("/", (req, res) => {
 //   });
 // });
 
-var users = [];
+const users = [];
 io.on("connection", socket => {
   socket.on("setUsername", data => {
     if (users.indexOf(data) > -1) {
@@ -44,6 +47,18 @@ io.on("connection", socket => {
       users.push(data);
       socket.emit("userSet", { username: data });
       socket.broadcast.emit("joined", data);
+      MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+        if (err) throw err;
+        const dbo = db.db("mychatdb");
+        dbo
+          .collection("chats")
+          .find({}, { projection: { _id: 0, username: 1, message: 1 } })
+          .toArray((err, result) => {
+            if (err) throw err;
+            console.log(result);
+            db.close();
+          });
+      });
     }
     socket.on("disconnect", () => {
       socket.broadcast.emit("left", data + " has left");
@@ -55,6 +70,31 @@ io.on("connection", socket => {
     socket.broadcast.emit("notify everyone", {
       user: data.user,
       comment: data.message
+    });
+    MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
+      if (err) throw err;
+      const dbo = db.db("mychatdb");
+      const myobj = { username: data.user, message: data.message };
+      dbo.collection("chats").insertOne(myobj, (err, res) => {
+        if (err) throw err;
+        console.log("1 document inserted");
+        db.close();
+      });
+    });
+  });
+
+  app.get("/data", (req, res) => {
+    MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+      if (err) throw err;
+      const dbo = db.db("mychatdb");
+      dbo
+        .collection("chats")
+        .find({}, { projection: { _id: 0, username: 1, message: 1 } })
+        .toArray((err, result) => {
+          if (err) throw err;
+          res.json(result);
+          db.close();
+        });
     });
   });
 
