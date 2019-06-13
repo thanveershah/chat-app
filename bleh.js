@@ -55,7 +55,6 @@ io.on("connection", socket => {
           .find({}, { projection: { _id: 0, username: 1, message: 1 } })
           .toArray((err, result) => {
             if (err) throw err;
-            console.log(result);
             db.close();
           });
       });
@@ -83,13 +82,29 @@ io.on("connection", socket => {
     });
   });
 
-  app.get("/data", (req, res) => {
+  //Total Count
+  let counts = 0;
+  MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+    if (err) throw err;
+    const dbo = db.db("mychatdb");
+    let n = dbo.collection("chats").find();
+    n.count((err, data) => {
+      counts = data;
+    });
+  });
+
+  //Top to Bottom
+  app.get("/data/:limit", (req, res) => {
+    let start = parseInt(req.params.limit);
+    let end = 15 + start;
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
       if (err) throw err;
       const dbo = db.db("mychatdb");
       dbo
         .collection("chats")
         .find({}, { projection: { _id: 0, username: 1, message: 1 } })
+        .skip(start)
+        .limit(end)
         .toArray((err, result) => {
           if (err) throw err;
           res.json(result);
@@ -97,6 +112,35 @@ io.on("connection", socket => {
         });
     });
   });
+
+  //Bottom to Top;
+  // app.get("/data/:start/:end", (req, res) => {
+  //   let start = parseInt(req.params.start);
+  //   let end = parseInt(req.params.end);
+  //   start = counts - start;
+  //   end = counts - end;
+  //   if (start >= 0) {
+  //     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+  //       if (err) throw err;
+  //       const dbo = db.db("mychatdb");
+  //       dbo
+  //         .collection("chats")
+  //         .find({}, { projection: { _id: 0, username: 1, message: 1 } })
+  //         .skip(start)
+  //         .limit(end)
+  //         .toArray((err, result) => {
+  //           if (err) throw err;
+  //           res.json(result);
+  //           db.close();
+  //         });
+  //     });
+  //   } else {
+  //     return false;
+  //   }
+  //   console.log(counts);
+  //   console.log(end);
+  //   console.log(start);
+  // });
 
   //Send Message
 
