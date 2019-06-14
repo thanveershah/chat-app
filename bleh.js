@@ -18,19 +18,18 @@ io.on("connection", socket => {
     } else {
       users.push(data);
       socket.emit("userSet", { username: data });
-      socket.on("loadData", data => {
-        socket.on("msg", data => {
-          io.emit("newmsg", data);
-          socket.broadcast.emit("notify everyone", {
-            user: data.user,
-            comment: data.message
-          });
-        });
-      });
       socket.broadcast.emit("joined", data);
     }
     socket.on("disconnect", () => {
       socket.broadcast.emit("left", data + " has left");
+    });
+  });
+
+  socket.on("msg", data => {
+    io.emit("newmsg", data);
+    socket.broadcast.emit("notify everyone", {
+      user: data.user,
+      comment: data.message
     });
   });
 });
