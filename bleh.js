@@ -10,26 +10,6 @@ app.get("/", (req, res) => {
   res.sendFile(pathname.join(__dirname, "chat.html"));
 });
 
-// io.on("connection", client => {
-//   console.log("Client Connected");
-
-//   client.on("join", data => {
-//     console.log(data);
-//   });
-
-//   client.on("messages", data => {
-//     client.emit("broad", data);
-//     client.broadcast.emit("broad", data);
-//   });
-
-//   client.on("isTyping", () => {
-//     client.broadcast.emit("typing", "Typing");
-//   });
-//   client.on("notTyping", () => {
-//     client.broadcast.emit("nottyping", "Stopped");
-//   });
-// });
-
 const users = [];
 io.on("connection", socket => {
   socket.on("setUsername", data => {
@@ -52,10 +32,6 @@ io.on("connection", socket => {
       comment: data.message
     });
   });
-
-  //Send Message
-
-  //Recieve Message
 });
 
 http.listen(PORT, () => console.log("Server Started in " + PORT));
