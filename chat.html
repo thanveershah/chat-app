@@ -77,7 +77,7 @@
         Notification (Desktop)
       </p>
     </footer>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.5/push.js"></script>
+
     <script>
       var socket = io.connect("http://shahchat.herokuapp.com/", { port: 5000 });
 
@@ -104,16 +104,11 @@
           infoWindow.open(map);
           map.setCenter(pos);
         }
-        socket.once("notify everyone", data => {
-          notifyMe(data.user, data.comment);
-        });
       });
 
       socket.on("joined", data => {
         document.getElementById("namePerson").innerHTML +=
           data + " has joined" + "<br />";
-
-        notifyUser(data);
       });
 
       socket.on("left", data => {
@@ -126,6 +121,7 @@
         setTimeout(() => {
           initMap();
         }, 5000);
+        socket.emit("loadData", { msg: "heh" });
       });
       var map;
       var infoWindow;
@@ -168,31 +164,6 @@
       socket.on("userExists", data => {
         document.getElementById("error-container").innerHTML = data;
       });
-
-      function notifyUser(user) {
-        Push.create("Welcome " + user, {
-          body: user + " Has joined",
-          timeout: 6000,
-          vibrate: [200, 100],
-          onClick: function() {
-            window.focus();
-            this.close();
-          },
-          vibrate: [200, 100, 200, 100, 200, 100, 200]
-        });
-      }
-
-      function notifyMe(user, message) {
-        Push.create(user, {
-          body: message,
-          timeout: 6000,
-          onClick: function() {
-            window.focus();
-            this.close();
-          },
-          vibrate: [200, 100, 200, 100, 200, 100, 200]
-        });
-      }
     </script>
     <script
       async
