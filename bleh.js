@@ -30,7 +30,7 @@ app.get("/", (req, res) => {
 //   });
 // });
 
-const users = []
+const users = [];
 io.on("connection", socket => {
   socket.on("setUsername", data => {
     if (users.indexOf(data) > -1) {
@@ -52,8 +52,6 @@ io.on("connection", socket => {
       comment: data.message
     });
   });
-
-  app.get("/data", (req, res) => {});
 
   //Send Message
 

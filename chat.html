@@ -68,7 +68,7 @@
     </footer>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.5/push.js"></script>
     <script>
-      var socket = io.connect("http://shahchat.herokuapp.com:5000");
+      var socket = io.connect("http://shahchat.herokuapp.com/", { port: 5000 });
       // var timeout;
       // socket.on("connect", data => {
       //   socket.emit("join", "Hello World from client");
@@ -147,19 +147,6 @@
         user = data.username;
         document.body.innerHTML =
           ' <div class="container-fluid"> <div class="row test-row"> <div class="col-12"> <h6 style="color:white;" class="mb-3 pt-4">Invite your friends for a group chat by sending the link!</h6> <div class="d-flex ground"> <div class="form-group"> <input type="text" id="message" class="form-control inputText" /> </div> <div class="form-group"> <button type="button" name="button" onclick="sendMessage()" class="btn btn-primary ml-2" > Send </button> </div> </div> <p id="namePerson" style="color:silver"></p> <div id="message-container" style="color:white"></div> </div> </div> </div>';
-        fetch("http://localhost:5000/data")
-          .then(res => res.json())
-          .then(res => {
-            console.log(res);
-            for (let i = 0; i < res.length; i++) {
-              document.getElementById("message-container").innerHTML +=
-                "<div><b>" +
-                res[i].username +
-                "</b>: " +
-                res[i].message +
-                "</div>";
-            }
-          });
       });
 
       const setUsername = () => {
