@@ -14,15 +14,9 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
     <script src="/socket.io/socket.io.js"></script>
-    <style>
-      .message-container {
-        background-color: black;
-        height: 500px;
-        overflow: hidden;
-      }
-    </style>
+    <style></style>
   </head>
-  <body>
+  <body class="bg-dark">
     <!-- <form id="form" autocomplete="off" id="chat_form">
       <input id="chat_input" type="text" />
     </form> -->
@@ -68,29 +62,13 @@
 
     <footer class="text-center">
       <p style="color:white">
-        Thanveer Shah - Developed using Node , Express , Socket.io , Push
+        Thanveer Shah v1 - Developed using Node , Express , Socket.io , Push
         Notification (Desktop)
       </p>
     </footer>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.5/push.js"></script>
     <script>
-      var socket = io.connect();
-      setTimeout(() => {
-        let message = document.getElementById("message-container");
-
-        message.addEventListener("scroll", () => {
-          if (
-            message.scrollTop + message.clientHeight >=
-            message.scrollHeight
-          ) {
-            start = start + 15;
-            // end = end + 15;
-            displayData();
-          } else {
-            return false;
-          }
-        });
-      }, 5000);
+      var socket = io.connect("http://shahchat.herokuapp.com:5000");
       // var timeout;
       // socket.on("connect", data => {
       //   socket.emit("join", "Hello World from client");
@@ -133,27 +111,14 @@
       //     $("#chat_input").val("");
       //   });
       // });
-      setTimeout(() => {
-        let shoppingListContainer = document.getElementById(
-          "message-container"
-        );
-        shoppingListContainer.scrollTop = shoppingListContainer.scrollHeight;
-      }, 5000);
 
-      function scrollBottom() {
-        let shoppingListContainer = document.getElementById(
-          "message-container"
-        );
-        shoppingListContainer.scrollTop = shoppingListContainer.scrollHeight;
-      }
       //Send Message
       const sendMessage = () => {
         var msg = document.getElementById("message").value;
         if (msg) {
           socket.emit("msg", { message: msg, user: user });
         }
-        // document.getElementById("message").value = "";
-        scrollBottom();
+        document.getElementById("message").value = "";
       };
 
       //Recieve Message
@@ -181,16 +146,11 @@
       socket.on("userSet", data => {
         user = data.username;
         document.body.innerHTML =
-          ' <div class="container-fluid"> <div class="row test-row"> <div class="col-12"> <h6 style="color:white;" class="mb-3 pt-4">Invite your friends for a group chat by sending the link!</h6> <div class="d-flex ground"> <div class="form-group"> <input type="text" id="message" class="form-control inputText" /> </div> <div class="form-group"> <button type="button" name="button" onclick="sendMessage()" class="btn btn-primary ml-2" > Send </button> </div> </div> <p id="namePerson" style="color:silver"></p> <div id="message-container" style="color:white;height:300px;overflow: auto;background:black;"></div> </div> </div> </div>';
-        displayData();
-      });
-
-      //Top to Bottom
-      var start = 0;
-      function displayData() {
-        fetch(`http://localhost:5000/data/${start}`)
+          ' <div class="container-fluid"> <div class="row test-row"> <div class="col-12"> <h6 style="color:white;" class="mb-3 pt-4">Invite your friends for a group chat by sending the link!</h6> <div class="d-flex ground"> <div class="form-group"> <input type="text" id="message" class="form-control inputText" /> </div> <div class="form-group"> <button type="button" name="button" onclick="sendMessage()" class="btn btn-primary ml-2" > Send </button> </div> </div> <p id="namePerson" style="color:silver"></p> <div id="message-container" style="color:white"></div> </div> </div> </div>';
+        fetch("http://localhost:5000/data")
           .then(res => res.json())
           .then(res => {
+            console.log(res);
             for (let i = 0; i < res.length; i++) {
               document.getElementById("message-container").innerHTML +=
                 "<div><b>" +
@@ -200,26 +160,7 @@
                 "</div>";
             }
           });
-      }
-
-      // var start = 15;
-      // var end = 0;
-      // // Bottom to TOP
-      // function displayData() {
-      //   fetch(`http://localhost:5000/data/${start}/${end}`)
-      //     .then(res => res.json())
-      //     .then(res => {
-      //       console.log(res);
-      //       for (let i = 0; i < res.length; i++) {
-      //         document.getElementById("message-container").innerHTML +=
-      //           "<div><b>" +
-      //           res[i].username +
-      //           "</b>: " +
-      //           res[i].message +
-      //           "</div>";
-      //       }
-      //     });
-      // }
+      });
 
       const setUsername = () => {
         socket.emit("setUsername", document.getElementById("name").value);
