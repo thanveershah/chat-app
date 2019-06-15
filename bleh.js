@@ -3,9 +3,9 @@ const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const pathname = require("path");
-const MongoClient = require("mongodb").MongoClient;
+// const MongoClient = require("mongodb").MongoClient;
 
-const url = "mongodb://localhost:27017/mychatdb";
+// const url = "mongodb://localhost:27017/mychatdb";
 
 //Express Way
 // const server = app.listen(5000)
@@ -47,17 +47,17 @@ io.on("connection", socket => {
       users.push(data);
       socket.emit("userSet", { username: data });
       socket.broadcast.emit("joined", data);
-      MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-        if (err) throw err;
-        const dbo = db.db("mychatdb");
-        dbo
-          .collection("chats")
-          .find({}, { projection: { _id: 0, username: 1, message: 1 } })
-          .toArray((err, result) => {
-            if (err) throw err;
-            db.close();
-          });
-      });
+      // MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+      //   if (err) throw err;
+      //   const dbo = db.db("mychatdb");
+      //   dbo
+      //     .collection("chats")
+      //     .find({}, { projection: { _id: 0, username: 1, message: 1 } })
+      //     .toArray((err, result) => {
+      //       if (err) throw err;
+      //       db.close();
+      //     });
+      // });
     }
     socket.on("disconnect", () => {
       socket.broadcast.emit("left", data + " has left");
@@ -70,47 +70,47 @@ io.on("connection", socket => {
       user: data.user,
       comment: data.message
     });
-    MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
-      if (err) throw err;
-      const dbo = db.db("mychatdb");
-      const myobj = { username: data.user, message: data.message };
-      dbo.collection("chats").insertOne(myobj, (err, res) => {
-        if (err) throw err;
-        console.log("1 document inserted");
-        db.close();
-      });
-    });
+    // MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
+    //   if (err) throw err;
+    //   const dbo = db.db("mychatdb");
+    //   const myobj = { username: data.user, message: data.message };
+    //   dbo.collection("chats").insertOne(myobj, (err, res) => {
+    //     if (err) throw err;
+    //     console.log("1 document inserted");
+    //     db.close();
+    //   });
+    // });
   });
 
   //Total Count
-  let counts = 0;
-  MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-    if (err) throw err;
-    const dbo = db.db("mychatdb");
-    let n = dbo.collection("chats").find();
-    n.count((err, data) => {
-      counts = data;
-    });
-  });
+  // let counts = 0;
+  // MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+  //   if (err) throw err;
+  //   const dbo = db.db("mychatdb");
+  //   let n = dbo.collection("chats").find();
+  //   n.count((err, data) => {
+  //     counts = data;
+  //   });
+  // });
 
   //Top to Bottom
   app.get("/data/:limit", (req, res) => {
     let start = parseInt(req.params.limit);
     let end = 15 + start;
-    MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-      if (err) throw err;
-      const dbo = db.db("mychatdb");
-      dbo
-        .collection("chats")
-        .find({}, { projection: { _id: 0, username: 1, message: 1 } })
-        .skip(start)
-        .limit(end)
-        .toArray((err, result) => {
-          if (err) throw err;
-          res.json(result);
-          db.close();
-        });
-    });
+    // MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+    //   if (err) throw err;
+    //   const dbo = db.db("mychatdb");
+    //   dbo
+    //     .collection("chats")
+    //     .find({}, { projection: { _id: 0, username: 1, message: 1 } })
+    //     .skip(start)
+    //     .limit(end)
+    //     .toArray((err, result) => {
+    //       if (err) throw err;
+    //       res.json(result);
+    //       db.close();
+    //     });
+    // });
   });
 
   //Bottom to Top;
