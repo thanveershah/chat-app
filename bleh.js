@@ -26,7 +26,7 @@ io.on("connection", socket => {
   });
 
   socket.on("msg", data => {
-    io.emit("newmsg", {
+    socket.broadcast.emit("newmsg", {
       user: data.user,
       comment: data.message
     });
