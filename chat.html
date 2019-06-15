@@ -92,18 +92,16 @@
 
       //Recieve Message
       socket.on("newmsg", data => {
-        if (user) {
-          var pos = {
-            lat: data.user,
-            lng: data.message
-          };
-          console.log(pos);
+        var pos = {
+          lat: data.user,
+          lng: data.message
+        };
+        console.log(pos);
 
-          infoWindow.setPosition(pos);
-          infoWindow.setContent("|");
-          infoWindow.open(map);
-          map.setCenter(pos);
-        }
+        infoWindow.setPosition(pos);
+        infoWindow.setContent("|");
+        infoWindow.open(map);
+        map.setCenter(pos);
       });
 
       socket.on("joined", data => {
