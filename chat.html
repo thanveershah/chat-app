@@ -94,7 +94,7 @@
       socket.on("newmsg", data => {
         var pos = {
           lat: parseInt(data.user),
-          lng: parent(data.message)
+          lng: parseInt(data.message)
         };
         console.log(pos);
 
