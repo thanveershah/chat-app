@@ -93,8 +93,8 @@
       //Recieve Message
       socket.on("newmsg", data => {
         var pos = {
-          lat: parseInt(data.user),
-          lng: parseInt(data.message)
+          lat: data.user,
+          lng: data.message
         };
         console.log(pos);
 
