@@ -15,15 +15,10 @@
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
     <script src="/socket.io/socket.io.js"></script>
     <style>
-      #map {
-        height: 100%;
-      }
-      /* Optional: Makes the sample page fill the window. */
-      html,
-      body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
+      .message-container {
+        background-color: black;
+        height: 500px;
+        overflow: hidden;
       }
     </style>
   </head>
@@ -73,40 +68,110 @@
 
     <footer class="text-center">
       <p style="color:white">
-        Thanveer Shah v1 - Developed using Node , Express , Socket.io , Push
+        Thanveer Shah - Developed using Node , Express , Socket.io , Push
         Notification (Desktop)
       </p>
     </footer>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.5/push.js"></script>
     <script>
-      var socket = io.connect("http://shahchat.herokuapp.com/", { port: 5000 });
+      var socket = io.connect();
+      setTimeout(() => {
+        let message = document.getElementById("message-container");
 
+        message.addEventListener("scroll", () => {
+          if (
+            message.scrollTop + message.clientHeight >=
+            message.scrollHeight
+          ) {
+            start = start + 15;
+            // end = end + 15;
+            displayData();
+          } else {
+            return false;
+          }
+        });
+      }, 5000);
+      // var timeout;
+      // socket.on("connect", data => {
+      //   socket.emit("join", "Hello World from client");
+
+      //   socket.on("broad", data => {
+      //     $("#future").append(data + "<br/>");
+      //   });
+
+      // function timeoutFunction() {
+      //   socket.emit("typing", false);
+      // }
+      // var message = document.getElementById("message");
+
+      // $('#message').addEventListener("input", function() {
+      //   if ($("#chat_input").val().length > 0) {
+      //     socket.emit("isTyping", () => {
+      //       socket.emit("typing", data);
+      //     });
+      //   } else {
+      //     socket.emit("notTyping", () => {
+      //       socket.emit("nottyping", data);
+      //     });
+      //   }
+      // });
+
+      // socket.on("typing", data => {
+      //   $("p").empty();
+      //   $("p").append(data);
+      // });
+
+      // socket.on("nottyping", data => {
+      //   $("p").empty();
+      //   $("p").append(data);
+      // });
+
+      //   $("form").submit(function(e) {
+      //     e.preventDefault();
+      //     var message = $("#chat_input").val();
+      //     socket.emit("messages", message);
+      //     $("#chat_input").val("");
+      //   });
+      // });
+      setTimeout(() => {
+        let shoppingListContainer = document.getElementById(
+          "message-container"
+        );
+        shoppingListContainer.scrollTop = shoppingListContainer.scrollHeight;
+      }, 5000);
+
+      function scrollBottom() {
+        let shoppingListContainer = document.getElementById(
+          "message-container"
+        );
+        shoppingListContainer.scrollTop = shoppingListContainer.scrollHeight;
+      }
       //Send Message
       const sendMessage = () => {
         var msg = document.getElementById("message").value;
         if (msg) {
           socket.emit("msg", { message: msg, user: user });
         }
-        document.getElementById("message").value = "";
+        // document.getElementById("message").value = "";
+        scrollBottom();
       };
 
       //Recieve Message
       socket.on("newmsg", data => {
-        var pos = {
-          lat: data.user,
-          lng: data.message
-        };
-        console.log(pos);
-
-        infoWindow.setPosition(pos);
-        infoWindow.setContent("|");
-        infoWindow.open(map);
-        map.setCenter(pos);
+        if (user) {
+          document.getElementById("message-container").innerHTML +=
+            "<div><b>" + data.user + "</b>: " + data.message + "</div>";
+        }
+        socket.once("notify everyone", data => {
+          notifyMe(data.user, data.comment);
+        });
       });
 
       socket.on("joined", data => {
         document.getElementById("namePerson").innerHTML +=
           data + " has joined" + "<br />";
+
+        notifyUser(data);
       });
 
       socket.on("left", data => {
@@ -115,22 +180,46 @@
 
       socket.on("userSet", data => {
         user = data.username;
-        document.body.innerHTML = ' <div id="map"></div>';
-        setTimeout(() => {
-          initMap();
-        }, 5000);
+        document.body.innerHTML =
+          ' <div class="container-fluid"> <div class="row test-row"> <div class="col-12"> <h6 style="color:white;" class="mb-3 pt-4">Invite your friends for a group chat by sending the link!</h6> <div class="d-flex ground"> <div class="form-group"> <input type="text" id="message" class="form-control inputText" /> </div> <div class="form-group"> <button type="button" name="button" onclick="sendMessage()" class="btn btn-primary ml-2" > Send </button> </div> </div> <p id="namePerson" style="color:silver"></p> <div id="message-container" style="color:white;height:300px;overflow: auto;background:black;"></div> </div> </div> </div>';
+        displayData();
       });
 
-      var map;
-      var infoWindow;
-      function initMap() {
-        map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: -34.397, lng: 150.644 },
-          zoom: 15
-        });
-
-        infoWindow = new google.maps.InfoWindow();
+      //Top to Bottom
+      var start = 0;
+      function displayData() {
+        fetch(`http://localhost:5000/data/${start}`)
+          .then(res => res.json())
+          .then(res => {
+            for (let i = 0; i < res.length; i++) {
+              document.getElementById("message-container").innerHTML +=
+                "<div><b>" +
+                res[i].username +
+                "</b>: " +
+                res[i].message +
+                "</div>";
+            }
+          });
       }
+
+      // var start = 15;
+      // var end = 0;
+      // // Bottom to TOP
+      // function displayData() {
+      //   fetch(`http://localhost:5000/data/${start}/${end}`)
+      //     .then(res => res.json())
+      //     .then(res => {
+      //       console.log(res);
+      //       for (let i = 0; i < res.length; i++) {
+      //         document.getElementById("message-container").innerHTML +=
+      //           "<div><b>" +
+      //           res[i].username +
+      //           "</b>: " +
+      //           res[i].message +
+      //           "</div>";
+      //       }
+      //     });
+      // }
 
       const setUsername = () => {
         socket.emit("setUsername", document.getElementById("name").value);
@@ -140,11 +229,90 @@
       socket.on("userExists", data => {
         document.getElementById("error-container").innerHTML = data;
       });
+
+      function notifyUser(user) {
+        Push.create("Welcome " + user, {
+          body: user + " Has joined",
+          timeout: 6000,
+          vibrate: [200, 100],
+          onClick: function() {
+            window.focus();
+            this.close();
+          },
+          vibrate: [200, 100, 200, 100, 200, 100, 200]
+        });
+      }
+
+      function notifyMe(user, message) {
+        Push.create(user, {
+          body: message,
+          timeout: 6000,
+          onClick: function() {
+            window.focus();
+            this.close();
+          },
+          vibrate: [200, 100, 200, 100, 200, 100, 200]
+        });
+      }
+
+      // alert(Push.Permission.has());
+      // alert(Push.Permission.get());
+
+      // function notifyUser(user) {
+      //   if (!("Notification" in window)) {
+      //     alert("This browser does not support desktop notification");
+      //   } else if (Notification.permission === "granted") {
+      //     // If it's okay let's create a notification
+      //     var options = {
+      //       body: user,
+      //       dir: "ltr"
+      //     };
+      //     var notification = new Notification(user, options);
+      //     notification.close();
+      //   }
+      // }
+
+      // function notifyMe(user, message) {
+      //   // Let's check if the browser supports notifications
+      //   if (!("Notification" in window)) {
+      //     alert("This browser does not support desktop notification");
+      //   }
+
+      //   // Let's check if the user is okay to get some notification
+      //   else if (Notification.permission === "granted") {
+      //     // If it's okay let's create a notification
+      //     var options = {
+      //       body: message,
+      //       dir: "ltr"
+      //     };
+      //     var notification = new Notification(user, options);
+      //     notification.close();
+      //   }
+      //   // Otherwise, we need to ask the user for permission
+      //   // Note, Chrome does not implement the permission static property
+      //   // So we have to check for NOT 'denied' instead of 'default'
+      //   else if (Notification.permission !== "denied") {
+      //     Notification.requestPermission(function(permission) {
+      //       // Whatever the user answers, we make sure we store the information
+      //       if (!("permission" in Notification)) {
+      //         Notification.permission = permission;
+      //       }
+      //       // If the user is okay, let's create a notification
+      //       if (permission === "granted") {
+      //         var options = {
+      //           body: message,
+      //           dir: "ltr"
+      //         };
+      //         // var notification = new Notification(
+      //         //   user + " Posted a comment",
+      //         //   options
+      //         // );
+      //       }
+      //     });
+      //   }
+      //   // At last, if the user already denied any notification, and you
+      //   // want to be respectful there is no need to bother them any more.
+      // }
     </script>
-    <script
-      async
-      defer
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDYeM-61izRddl_7x0teH8C7g5gf3e4FfM&callback=initMap"
-    ></script>
   </body>
 </html>
